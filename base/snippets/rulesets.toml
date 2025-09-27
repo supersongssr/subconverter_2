@@ -70,9 +70,7 @@ ruleset = "rules/DivineEngine/Surge/Ruleset/China.list"
 group = "🎯 全球直连"
 ruleset = "rules/NobyDa/Surge/Download.list"
 
-[[rulesets]]
-group = "🎯 全球直连"
-ruleset = "[]GEOIP,CN"
+
 
 [[rulesets]]
 group = "🐟 漏网之鱼"

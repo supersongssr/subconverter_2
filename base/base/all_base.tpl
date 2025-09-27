@@ -226,7 +226,6 @@ localhost
 8.8.4.4
 
 [DnsRule]
-DOMAIN-KEYWORD, geosite:geolocation-!cn, Remote
 DOMAIN-SUFFIX, google.com, Remote
 
 [DnsHost]
