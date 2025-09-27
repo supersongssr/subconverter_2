@@ -306,7 +306,10 @@ enhanced-mode-by-rule = true
                     "any"
                 ],
                 "server": "dns_resolver"
-            },
+            }
+            {% if request.target != "singbox" %}
+            ,
+            
             {
                 "geosite": [
                     "category-ads-all"
@@ -330,6 +333,7 @@ enhanced-mode-by-rule = true
                 ],
                 "server": "dns_proxy"
             }
+            {% endif %}
         ],
         "final": "dns_direct",
         "independent_cache": true,
