@@ -332,7 +332,7 @@ port = 25500
 serve_file_root = "web"
 
 [advanced]
-log_level = "debug"
+log_level = "error"
 print_debug_info = false
 max_pending_connections = 10240
 max_concurrent_threads = 4
