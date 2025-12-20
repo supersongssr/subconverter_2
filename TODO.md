@@ -1,3 +1,20 @@
+
+# V0 Version 0 
+
+
+
+## V0 add 
+- [x]  add 支持 vless-grpc 订阅转换为 loon 支持格式
+    where: 
+    why:
+    how:
+    must: 
+
+
+## V0 Debug 
+
+
+
 - [x] 编译
     - 在 debian上,编译 debian需要的版本. 
 

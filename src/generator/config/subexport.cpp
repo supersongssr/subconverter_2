@@ -2217,7 +2217,8 @@ proxyToLoon(std::vector<Proxy> &nodes, const std::string &base_conf,
         std::string &hostname = x.Hostname, &username = x.Username, &password = x.Password, &method = x.EncryptMethod, &
                 plugin = x.Plugin, &pluginopts = x.PluginOption, &id = x.UserId, &transproto = x.TransferProtocol, &host
                 = x.Host, &path = x.Path, &protocol = x.Protocol, &protoparam = x.ProtocolParam, &obfs = x.OBFS, &
-                obfsparam = x.OBFSParam, flow = x.Flow, pk = x.PublicKey, shortId = x.ShortId, sni = x.ServerName;
+                obfsparam = x.OBFSParam, flow = x.Flow, pk = x.PublicKey, shortId = x.ShortId, sni = x.ServerName,
+                &grpcServiceName = x.GRPCServiceName, &grpcMode = x.GRPCMode;
         std::string port = std::to_string(x.Port), aid = std::to_string(x.AlterId);
         bool &tlssecure = x.TLSSecure;
 
@@ -2260,11 +2261,20 @@ proxyToLoon(std::vector<Proxy> &nodes, const std::string &base_conf,
                 break;
             case ProxyType::VLESS:
                 if (flow != "xtls-rprx-vision") {
-                    if (transproto == "ws") {
+                    if (transproto == "ws" || transproto == "grpc") {
                         proxy = "VLESS," + hostname + "," + port + ",\"" + id + "\"" +
-                            ",path=" + path + ",host=" + host + ",transport=" + transproto +
+                            ",transport=" + transproto +
                             ",udp=" + (udp.get() ? "true" : "false") + ",over-tls=" + (
                                 tlssecure ? "true" : "false") + ",sni=" + sni;
+
+                        if (transproto == "ws") {
+                            proxy += ",path=" + path + ",host=" + host;
+                        } else if (transproto == "grpc") {
+                            if (!grpcServiceName.empty())
+                                proxy += ",grpc-service-name=" + grpcServiceName;
+                            if (!grpcMode.empty() && grpcMode != "gun")
+                                proxy += ",mode=" + grpcMode;
+                        }
                     } else {
                         continue;
                     }
@@ -2272,18 +2282,27 @@ proxyToLoon(std::vector<Proxy> &nodes, const std::string &base_conf,
                     proxy = "VLESS," + hostname + "," + port + ",\"" + id + "\",flow=" + flow + ",public-key=\"" + pk +
                             "\",short-id=" + shortId + ",udp=" + (udp.get() ? "true" : "false") + ",over-tls=" + (
                                 tlssecure ? "true" : "false") + ",sni=" + sni;
+
+                    // Add REALITY support for grpc
+                    if (!pk.empty() && transproto == "grpc") {
+                        proxy += ",reality=true,pbk=" + pk;
+                        if (!shortId.empty())
+                            proxy += ",sid=" + shortId;
+                        if (!grpcServiceName.empty())
+                            proxy += ",grpc-service-name=" + grpcServiceName;
+                    }
                 }
 
                 switch (hash_(transproto)) {
                     case "tcp"_hash:
                         proxy += ",transport=tcp";
                         break;
+                    case "ws"_hash:
+                        break;
+                    case "grpc"_hash:
+                        break;
                     default:
-                        if (transproto != "ws") {
-                            continue;
-                        } else {
-                            break;;
-                        }
+                        continue;
                 }
                 if (!scv.is_undef())
                     proxy += ",skip-cert-verify=" + std::string(scv.get() ? "true" : "false");
